@@ -1,43 +1,35 @@
 const url = "https://www.espncricinfo.com/series/ipl-2020-21-1210595";
+const fs = require("fs");
+const path = require("path");
+// Venue date opponent result runs balls fours sixes sr
 const request = require("request");
 const cheerio = require("cheerio");
-request(url,cb);
-function cb(err,request,html){
-    if(err){
+const AllMatcgObj = require("./Allmatch");
+// home page 
+const iplPath = path.join(__dirname, "ipl");
+dirCreater(iplPath);
+request(url, cb);
+function cb(err, response, html) {
+    if (err) {
         console.log(err);
-    }
-    else{
+    } else {
         // console.log(html);
         extractLink(html);
     }
 }
-
-function extractLink(html){
+function extractLink(html) {
     let $ = cheerio.load(html);
-    let anchorElem = $(".ds-border-t.ds-border-line.ds-text-center.ds-py-2");
-    // console.log(anchorElem);
-    let link = anchorElem.find('a').attr("href");
-    let fullLink = "https://www.espncricinfo.com"+link;
-    getAllMatchesLink(fullLink);
+    let anchorElem = $("a[data-hover='View All Results']");
+    let link = anchorElem.attr("href");
+    // console.log(link);
+    let fullLink = "https://www.espncricinfo.com" + link;
+    // console.log(fullLink);
+    AllMatcgObj.gAlmatches(fullLink);
 }
 
-function getAllMatchesLink(url){
-    request(url,function(err,response,html){
-        if(err){
-            console.log(err);
-        }else{
-            extractAllLinks(html);
-        }
-    })
-}
-
-function extractAllLinks(html)
-{
-    let $ = cheerio.load(html);
-    let scorecardElems = $(".ds-grow.ds-px-4.ds-border-r.ds-border-line-default-translucent");
-    for(let i=0;i<scorecardElems.length;i++){
-        let link = $(scorecardElems[i]).find('a').attr("href");
-        let fullLink = "https://www.espncricinfo.com"+link;
-        console.log(fullLin);
+function dirCreater(filePath) {
+    if (fs.existsSync(filePath) == false) {
+        fs.mkdirSync(filePath);
     }
+
 }
